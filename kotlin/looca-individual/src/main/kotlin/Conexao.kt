@@ -1,5 +1,6 @@
 import org.apache.commons.dbcp2.BasicDataSource
 import org.springframework.jdbc.core.JdbcTemplate
+import java.lang.IllegalStateException
 
 object Conexao {
 
@@ -18,6 +19,7 @@ object Conexao {
         }
 
     fun criarTabelas(){
+        val jdbcTemplate = Conexao.jdbcTemplate ?: throw IllegalStateException("O JDBC não foi inicializado corretamente.")
         jdbcTemplate!!.execute("""
 
             USE medconnect;

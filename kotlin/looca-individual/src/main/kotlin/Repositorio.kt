@@ -1,35 +1,43 @@
 import com.github.britooo.looca.api.core.Looca
 import org.springframework.jdbc.core.JdbcTemplate
-import java.time.LocalDateTime
 import java.time.LocalDateTime.*
 import javax.swing.JOptionPane
 
 class Repositorio {
     lateinit var jdbcTemplate: JdbcTemplate
 
-    var id = Looca().processador.id
-
-    val idRobo = jdbcTemplate.queryForObject(
-        """
-                select idRobo from RoboCirurgiao where idProcess = '$id'
-            """,
-        Int::class.java,
-    )
-
-
+    //iniciando a conexão sql
     fun iniciar(){
 
-        jdbcTemplate= Conexao.jdbcTemplate!!
+        jdbcTemplate = Conexao.jdbcTemplate!!
+
     }
 
     var looca = Looca()
 
+    // id do processador
+    var id = Looca().processador.id
+
+    fun idRobo(): Int{
+
+       return  jdbcTemplate.queryForObject(
+            """
+                select idRobo from RoboCirurgiao where idProcess = '$id'
+            """,
+            Int::class.java,
+        )
+    }
+
+
+
+
+    // verificando se a máquina já foi cadastrada/registrada no bd
     fun verificarPrecedentes(): Boolean {
 
         val existeID = jdbcTemplate.queryForObject(
             """
-    select count(*) as count from RoboCirurgiao where idProcess = '$id'
-    """,
+                select count(*) as count from RoboCirurgiao where idProcess = '$id'
+             """,
             Int::class.java,
         )
 
@@ -42,12 +50,13 @@ class Repositorio {
 
     }
 
+    // capturando processos (não enviar pro banco)
     fun processos(){
         var grupoprocessos = looca.grupoDeProcessos
         var processos = grupoprocessos.processos
 
         //for (processo in processos){
-            //println(processo)
+        //println(processo)
         //}
 
         var totalProcessos = grupoprocessos.totalProcessos
@@ -55,8 +64,11 @@ class Repositorio {
 
     }
 
+
+    // capturando temperatura e mandando pro bd
     fun temperatura(){
         var temperatura = looca.temperatura
+
         println(temperatura)
 
         while(true) {
@@ -64,7 +76,7 @@ class Repositorio {
                 """
                     INSERT INTO registros (fkRoboRegistro, HorarioDado, dado, fkComponente)
                     VALUES 
-                    ('$idRobo', '${now()}', '$temperatura', 5);
+                    ('${idRobo()}', '${now()}', '$temperatura', 5);
                 """.trimIndent()
             )
 
@@ -72,7 +84,7 @@ class Repositorio {
         }
     }
 
-
+    // capturando boot-time e mandando pro bd
     fun sistema(){
         val sistema = looca.sistema
         var tempDeAtividade = sistema.tempoDeAtividade
@@ -82,7 +94,7 @@ class Repositorio {
                 """
                     INSERT INTO registros (fkRoboRegistro, HorarioDado, dado, fkComponente)
                     VALUES 
-                    ('$idRobo', '${now()}', '$tempDeAtividade', 3);
+                    ('${idRobo()}', '${now()}', '$tempDeAtividade', 3);
                 """.trimIndent()
             )
 
@@ -90,6 +102,7 @@ class Repositorio {
         }
     }
 
+    // capturando dados de cpu e mandando pro bd
     fun cpu(){
         var processador = looca.processador
         var frequencia = processador.frequencia
@@ -100,8 +113,8 @@ class Repositorio {
                 """
                     INSERT INTO registros (fkRoboRegistro, HorarioDado, dado, fkComponente)
                     VALUES 
-                    ('$idRobo', '${now()}', '$frequencia', 2),
-                    ('$idRobo', '${now()}', '$uso', 1);
+                    ('${idRobo()}', '${now()}', '$frequencia', 2),
+                    ('${idRobo()}', '${now()}', '$uso', 1);
                 """.trimIndent()
             )
 
@@ -109,15 +122,14 @@ class Repositorio {
         }
     }
 
-    //cadastro de usuario
-
-
+    // login de usuario verificando no bd
     fun validarUsuario() {
 
-        var email: String = JOptionPane.showInputDialog("Insira seu email: ")
-        var senha: String = JOptionPane.showInputDialog("Insira sua senha: ")
+        var email: String = JOptionPane.showInputDialog(" [MedConnect]: Insira seu email: ")
+        var senha: String = JOptionPane.showInputDialog(" [MedConnect]: Insira sua senha: ")
 
 
+        // puxando a fkHospiital
         var usu = jdbcTemplate.queryForObject(
             """
              select fkHospital from usuario
@@ -126,7 +138,7 @@ class Repositorio {
             Int::class.java
         )
 
-
+        // verificando se o user existe
         var usuario = jdbcTemplate.queryForObject(
             """
                 select fkHospital from usuario
@@ -135,29 +147,28 @@ class Repositorio {
             Int::class.java
         )
 
+        // pergunta de deseja iniciar a captura
         if(usuario != null){
-            var validacao = JOptionPane.showInputDialog(null, "Login realizado com sucesso. Deseja iniciar a captura? Digite S para sim e qualquer coisa para não: ")
+            var validacao = JOptionPane.showInputDialog(null, " [MedConnect]: Login realizado com sucesso. Deseja iniciar a captura? Digite S para sim e qualquer coisa para não: ")
 
 
-
-            if( validacao == "S"){
+            if( validacao == "S" || validacao == "s"){
                 cadastro(usu)
                 cpu()
                 temperatura()
                 processos()
                 sistema()
             }else{
-                JOptionPane.showMessageDialog(null, "Saindo do programa.")
+                JOptionPane.showMessageDialog(null, " [MedConnect]: Saindo do programa.")
             }
 
         } else{
-            JOptionPane.showMessageDialog(null, "Você não está registrado.")
+            JOptionPane.showMessageDialog(null, " [MedConnect]: Você não está registrado.")
         }
 
-}
+    }
 
-
-
+    // caso a máquina não esteja cadastrada, faz o cadastro dela através do idprocessador
     private fun cadastro(fkHospital: Int) {
 
         if(verificarPrecedentes() == true) {
@@ -167,17 +178,11 @@ class Repositorio {
                 VALUES ('Modelo A', '${looca.processador.fabricante}', 1, '$id', $fkHospital);
             """
             )
-            println("Robô cadastrado.")
+            println(" [MedConnect]: Robô cadastrado.")
         } else{
             0
         }
 
-
-
-        //solucao()
-        //all()
     }
-
-
 
 }
