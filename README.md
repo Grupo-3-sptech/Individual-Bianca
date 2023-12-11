@@ -28,7 +28,7 @@ Para garantir a execução plena da página, é necessário executar o JAR relac
 <a href = ""> <img src = "https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white"> </a>
 
 ## Conclusão
-Em conclusão, o Projeto-Individual-Bianca representa um passo crucial na evolução da Solução MedConnect, fortalecendo a estabilidade das máquinas cirúrgicas Da Vinci. Ao introduzir um monitoramento mais abrangente e eficaz, estamos não apenas superando desafios técnicos, mas também contribuindo para a excelência e confiabilidade das cirurgias robóticas. Este projeto não apenas eleva os padrões de segurança, mas também solidifica a posição da MedConnect como líder inovadora no setor, impulsionando o avanço contínuo da medicina de precisão.
+Em conclusão, o Projeto-Individual-Bianca representa um passo crucial na evolução da Solução MedConnect, fortalecendo a estabilidade das máquinas cirúrgicas Da Vinci. Ao introduzir um monitoramento mais abrangente e eficaz, estamos não apenas superando desafios técnicos, mas também contribuindo para a excelência e confiabilidade das cirurgias robóticas. 
 
 
 
