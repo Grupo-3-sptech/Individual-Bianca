@@ -1,6 +1,8 @@
 import com.github.britooo.looca.api.core.Looca
 import org.springframework.jdbc.core.JdbcTemplate
+import java.time.LocalDateTime
 import java.time.LocalDateTime.*
+import java.time.format.DateTimeFormatter
 import javax.swing.JOptionPane
 
 class Repositorio {
@@ -49,6 +51,11 @@ class Repositorio {
 
     // capturando temperatura e mandando pro bd
     fun temperatura() {
+
+        val dataHoraAtual = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val dataHoraFormatada = dataHoraAtual.format(formatter)
+
         println("passouuuu")
         while (true) {
             // Mova a declaração da variável temperatura para dentro do loop
@@ -57,19 +64,15 @@ class Repositorio {
 
             val teste = jdbcTemplate.update(
                 """
-            INSERT INTO registros (fkRoboRegistro, HorarioDado, dado, fkComponente)
-            VALUES 
-            ('${idRobo()}', '${now()}', '$temperatura', 5);
-        """.trimIndent()
+                    INSERT INTO registros (fkRoboRegistro, HorarioDado, dado, fkComponente)
+                    VALUES 
+                    (${idRobo()}, '$dataHoraFormatada', '$temperatura', 22);
+                """.trimIndent()
             )
             println(teste)  // Troquei print por println para garantir uma nova linha
             Thread.sleep(7000)
         }
-
-
     }
-
-
 
     // capturando dados de cpu e mandando pro bd
     fun cpu(){
@@ -81,7 +84,7 @@ class Repositorio {
                 """
                     INSERT INTO registros (fkRoboRegistro, HorarioDado, dado, fkComponente)
                     VALUES 
-                    ('${idRobo()}', '${now()}', '$frequencia', 2);
+                    (, '${now()}', '$frequencia', 2);
                     
                 """.trimIndent()
             )
